@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+if (is_file(__DIR__.'/../autoload.php') === true) {
+  include_once __DIR__.'/../autoload.php';
+} else {
+  include_once 'andrewmriley/judoon/autoload.php';
+}
+
+use Symfony\Component\Console\Application;
+use App\Commands\HelloworldCommand;
+
+$command = new HelloworldCommand();
+
+$app = new Application();
+$app->add($command);
+$app->run();
