@@ -25,7 +25,7 @@ class GenerateCommand extends Command {
    *
    */
   protected function configure(): void {
-    $this->setName('logasaurus:generate')
+    $this->setName('generate')
       ->setDescription('Updates the changelog with the latest entries.')
       ->setHelp('Put text here.')
       ->addArgument('version', InputArgument::REQUIRED,
