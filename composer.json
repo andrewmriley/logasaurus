@@ -14,11 +14,14 @@
     }
   ],
   "require": {
-    "php": "^7.1 || ^8.0",
-    "symfony/console": "^3",
-    "symfony/yaml": "3.4.41",
-    "symfony/filesystem": "^3",
-    "symfony/finder": "^3"
+    "php": "^7.1",
+    "symfony/console": "^4.0",
+    "symfony/yaml": "^4.0",
+    "symfony/filesystem": "^4.0",
+    "symfony/finder": "^4.0"
+  },
+  "require-dev": {
+    "composer/composer": "^2.1"
   },
   "autoload": {
     "psr-4": {
@@ -28,16 +31,5 @@
   },
   "bin": [
     "bin/logasaurus"
-  ],
-  "scripts": {
-    "post-install-cmd": [
-      "andrewmriley\\logasaurus\\Composer\\InstallBin::install"
-    ],
-    "post-update-cmd": [
-      "andrewmriley\\logasaurus\\Composer\\InstallBin::install"
-    ]
-  },
-  "require-dev": {
-    "composer/composer": "^2.1"
-  }
+  ]
 }
