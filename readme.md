@@ -1,17 +1,26 @@
 Installation
 ===
 
-Composer require
+1. Composer require
+```shell
+$ composer require andrewmriley/logasaurus
+```
 
-Create a .logasaurus.yml in the root
-format:
+2. Create a `.logasaurus.yml` file in the root of your project with the format:
+
+```yaml
 changelogFile: changelogfilename
 finalize: true/false
-filesPath: pathtofilestoread
+filesPath: path/to/files/to/read/
+```
 
-How to run
-./vendor/bin/logasaurus generate versionnumber
-optional date
+### How to run:
 
-example
-logasaurus generate 1.01.00
+```shell
+$ ./vendor/bin/logasaurus generate versionnumber [optional date]
+```
+
+example:
+```shell
+$ logasaurus generate 1.01.00
+```
