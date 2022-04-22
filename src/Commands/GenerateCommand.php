@@ -27,11 +27,17 @@ class GenerateCommand extends Command {
   protected function configure(): void {
     $this->setName('generate')
       ->setDescription('Updates the changelog with the latest entries.')
-      ->setHelp('Put text here.')
-      ->addArgument('version', InputArgument::REQUIRED,
-        'Enter the version number.')
-      ->addArgument('date', InputArgument::OPTIONAL,
-        'Enter the date for the changelog.', date('Y-m-d'));
+      ->addArgument('version', InputArgument::REQUIRED, 'The version number.')
+      ->addArgument('date', InputArgument::OPTIONAL, 'The date for the changelog.', date('Y-m-d'))
+      ->setHelp(
+        <<<'EOT'
+        The <info>generate</info> command creates or updates the configured changelog file.
+        Files describing changes should be added to the configured <comment>filesPath</comment> directory
+        (changelogs/unreleased/ is used by default) as work is completed.
+        The individual change file names should match their related Jira ticket number: eg. "JIRA-9999"; and contain
+        only the description text for the change.
+        EOT
+      );
   }
 
   /**

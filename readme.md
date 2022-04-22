@@ -9,9 +9,9 @@ $ composer require andrewmriley/logasaurus
 2. Create a `.logasaurus.yml` file in the root of your project with the format:
 
 ```yaml
-changelogFile: changelogfilename
-finalize: true/false
-filesPath: path/to/files/to/read/
+changelogFile: CHANGELOG.md
+filesPath: changelogs/unreleased/
+finalize: false
 ```
 
 ### How to run:
