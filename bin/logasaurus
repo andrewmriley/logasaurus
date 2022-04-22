@@ -7,7 +7,7 @@ if (is_file($autoload)) {
 }
 
 use Symfony\Component\Console\Application;
-use andrewmriley\logasaurus\Commands\GenerateCommand;
+use Logasaurus\Commands\GenerateCommand;
 
 $command = new GenerateCommand();
 

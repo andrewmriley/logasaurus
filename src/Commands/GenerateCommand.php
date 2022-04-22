@@ -1,6 +1,6 @@
 <?php
 
-namespace andrewmriley\logasaurus\Commands;
+namespace Logasaurus\Commands;
 
 use Exception;
 use Symfony\Component\Console\Command\Command;
