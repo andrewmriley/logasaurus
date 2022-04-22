@@ -11,21 +11,11 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 
-/**
- * Class GenerateCommand
- * @package andrewmriley\logasaurus\App\Commands
- */
 class GenerateCommand extends Command {
-  /**
-   * @var OutputInterface
-   */
-  private $output;
 
-  /**
-   *
-   */
   protected function configure(): void {
-    $this->setName('generate')
+    $this
+      ->setName('generate')
       ->setDescription('Updates the changelog with the latest entries.')
       ->addArgument('version', InputArgument::REQUIRED, 'The version number.')
       ->addArgument('date', InputArgument::OPTIONAL, 'The date for the changelog.', date('Y-m-d'))
@@ -43,38 +33,46 @@ class GenerateCommand extends Command {
   /**
    * @param \Symfony\Component\Console\Input\InputInterface $input
    * @param \Symfony\Component\Console\Output\OutputInterface $output
-   * @return int|null
+   * @return int
    */
-  protected function execute(
-    InputInterface $input,
-    OutputInterface $output
-  ): ?int {
-    $this->output = $output;
-    $fs = new Filesystem();
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $config = Yaml::parseFile('.logasaurus.yml');
-    $config['filesPath'] = $config['filesPath'] ?? 'changelogs/unreleased/';
-    if (!$fs->exists($config['filesPath'])) {
-      $this->output->writeln(sprintf('The filesPath %s does not exist.',
-        $config['filesPath']));
-      return 0;
-    }
-    $config['finalize'] = $config['finalize'] ?? FALSE;
 
-    $sourceFiles = $this->getFiles($config['filesPath']);
-    if (!empty($sourceFiles)) {
-      $list = $this->createList($sourceFiles);
-      if ($this->updateChangelog($config['changelogFile'],
-        $input->getArgument('version'), $input->getArgument('date'), $list)) {
-        $this->cleanupFiles($config['filesPath'], $sourceFiles,
-          $config['changelogFile'], $config['finalize']);
-      }
-      else {
-        $this->output->writeln(sprintf('There were no files found at the filesPath %s so nothing could be updated.',
-          $config['filesPath']));
-      }
+    $changelogFile = $config['changelogFile'] ?? '';
+    $filesPath = $config['filesPath'] ?? 'changelogs/unreleased/';
+    $finalize = $config['finalize'] ?? FALSE;
+
+    if (empty($changelogFile)) {
+      $output->writeln('No output file name was specified in "changelogFile", update your ".logasaurus.yml" settings.');
       return 1;
     }
-    return 0;
+
+    $fs = new Filesystem();
+    if (!$fs->exists($filesPath)) {
+      $output->writeln(sprintf('The filesPath %s does not exist.', $filesPath));
+      return 1;
+    }
+
+    $sourceFiles = $this->getFiles($filesPath);
+    if (empty($sourceFiles)) {
+      $output->writeln(
+        sprintf('There were no files found at the filesPath %s so nothing could be updated.', $filesPath));
+      return 0;
+    }
+
+    $change_list = $this->createList($sourceFiles);
+    $version = $input->getArgument('version');
+    $date = $input->getArgument('date');
+
+    try {
+      $this->updateChangelog($changelogFile, $version, $date, $change_list);
+      $this->cleanupFiles($filesPath, $sourceFiles, $changelogFile, $finalize);
+      return 0;
+    } catch (Exception $e) {
+      $output->writeln(sprintf('Error writing output to changelog %s',
+        $e->getMessage()));
+      return 1;
+    }
   }
 
   /**
@@ -114,26 +112,33 @@ class GenerateCommand extends Command {
    * @param string $version Version string to use in the changelog.
    * @param string $date Date to use in the changelog.
    * @param string $list List of changes from consumed files.
-   * @return bool
+   *
+   * @throws Exception
    */
   private function updateChangelog(
     string $path,
     string $version,
     string $date,
     string $list
-  ): bool {
-    $newContents = "---\n## >> $version ($date)\n$list";
-    $changelog = file_get_contents($path);
-    $changelog = str_replace('---', $newContents, $changelog);
-    $fs = new Filesystem();
-    try {
-      $fs->dumpFile($path, $changelog);
-    } catch (Exception $e) {
-      $this->output->writeln(sprintf('Error writing output to changelog %s',
-        $e));
-      return FALSE;
+  ): void {
+    $newContents = "\n## >> $version ($date)\n$list";
+    $contents = file_get_contents($path);
+
+    if (empty($contents)) {
+      $contents = $newContents;
     }
-    return TRUE;
+    else {
+      $last_entry_pos = strpos($contents, '## >>');
+      if ($last_entry_pos !== FALSE) {
+        $contents = substr_replace($contents, $newContents, $last_entry_pos, 0);
+      }
+      else {
+        $contents .= $newContents;
+      }
+    }
+
+    $fs = new Filesystem();
+    $fs->dumpFile($path, $contents);
   }
 
   /**
@@ -157,4 +162,5 @@ class GenerateCommand extends Command {
       passthru('git tag {version}');
     }
   }
+
 }
