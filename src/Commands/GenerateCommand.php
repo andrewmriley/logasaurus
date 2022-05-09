@@ -121,7 +121,7 @@ class GenerateCommand extends Command {
     string $date,
     string $list
   ): void {
-    $newContents = "\n## >> $version ($date)\n$list";
+    $newContents = "## >> $version ($date)\n$list\n";
     $contents = file_get_contents($path);
 
     if (empty($contents)) {
