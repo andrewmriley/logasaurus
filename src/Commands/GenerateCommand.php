@@ -128,7 +128,7 @@ class GenerateCommand extends Command {
       $contents = $newContents;
     }
     else {
-      $last_entry_pos = strpos($contents, '## >>');
+      $last_entry_pos = strpos($contents, '## >> ');
       if ($last_entry_pos !== FALSE) {
         $contents = substr_replace($contents, $newContents, $last_entry_pos, 0);
       }
