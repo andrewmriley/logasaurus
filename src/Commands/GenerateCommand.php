@@ -84,6 +84,7 @@ class GenerateCommand extends Command {
     $finder = new Finder();
     $finder->files()->in($directory);
     if ($finder->hasResults()) {
+      $finder->sortByName(true);
       foreach ($finder as $file) {
         $files[] = [
           'name' => $file->getRelativePathname(),
